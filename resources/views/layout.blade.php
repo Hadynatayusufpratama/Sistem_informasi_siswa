@@ -1,101 +1,135 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Sistem Informasi Siswa</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('page_title', 'Sistem Informasi Siswa')</title>
 
-    {{-- Bootstrap 5 --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body {
-            background-color: #f3f4f6;
+        body.dark-mode {
+            background: #121212 !important;
+            color: #e6e6e6 !important;
         }
+
+        .card.dark-mode {
+            background: #1e1e1e !important;
+            color: #fff !important;
+            border-color: #444 !important;
+        }
+
         .sidebar {
-            width: 240px;
-            min-height: 100vh;
-            background: linear-gradient(180deg, #2563eb, #1d4ed8);
-            color: #fff;
+            height: 100vh;
+            background: #0d6efd;
+            padding: 20px;
+            color: white;
         }
-        .sidebar .brand {
-            font-weight: 700;
-            letter-spacing: .03em;
+
+        .sidebar.dark-mode {
+            background: #072f6b !important;
         }
-        .sidebar a {
-            color: #e5e7eb;
-            text-decoration: none;
+
+        .navbar.dark-mode {
+            background: #072f6b !important;
         }
-        .sidebar a.active,
-        .sidebar a:hover {
-            background-color: rgba(15, 23, 42, 0.25);
-            color: #fff;
-        }
-        .topbar {
-            background: #ffffff;
-            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
-            z-index: 10;
-        }
-        .page-title {
-            font-weight: 600;
+
+        table.dark-mode {
+            background: #1e1e1e !important;
+            color: white !important;
         }
     </style>
 </head>
-<body>
-<div class="d-flex">
-    {{-- SIDEBAR --}}
-    <aside class="sidebar d-flex flex-column p-3">
-        <div class="mb-4">
-            <div class="brand h5 mb-0">Sistem Informasi Siswa</div>
-            <small class="text-light">Dashboard Akademik</small>
-        </div>
 
-        <nav class="nav nav-pills flex-column gap-1">
-            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-               href="{{ route('dashboard') }}">
-                🏠 Dashboard
-            </a>
-            <a class="nav-link {{ request()->routeIs('siswa.*') ? 'active' : '' }}"
-               href="{{ route('siswa.index') }}">
-                🎓 Data Siswa
-            </a>
-            <a class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}"
-               href="{{ route('profile') }}">
-                🙍 Profil
-            </a>
+<body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <h4 class="fw-bold">Sistem Informasi Siswa</h4>
+        <p>Dashboard Akademik</p>
+
+        <a href="{{ route('dashboard') }}" class="btn btn-light w-100 mb-2">🏠 Dashboard</a>
+        <a href="{{ route('siswa.index') }}" class="btn btn-light w-100 mb-2">🎓 Data Siswa</a>
+        <a href="{{ route('profile') }}" class="btn btn-light w-100 mb-4">👤 Profil</a>
+
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button class="btn btn-danger w-100">Keluar</button>
+        </form>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="flex-grow-1">
+
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light px-3" id="navbar">
+            <div class="container-fluid">
+                <span class="navbar-brand">Admin Manual</span>
+
+                <div class="d-flex">
+                    <button id="darkToggle" class="btn btn-outline-secondary">
+                        🌙 Dark Mode
+                    </button>
+                </div>
+            </div>
         </nav>
 
-        <div class="mt-auto pt-3 border-top border-light-subtle">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button class="btn btn-sm btn-light w-100">
-                    Keluar
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    {{-- MAIN CONTENT --}}
-    <div class="flex-grow-1 d-flex flex-column">
-        {{-- TOPBAR --}}
-        <header class="topbar px-4 py-3 d-flex justify-content-between align-items-center">
-            <div class="page-title">
-                @yield('page_title', 'Dashboard')
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-muted small">
-                    {{ auth()->user()->name ?? 'User' }}
-                </span>
-            </div>
-        </header>
-
-        {{-- CONTENT --}}
-        <main class="p-4">
+        <!-- PAGE CONTENT -->
+        <div class="p-4">
             @yield('content')
-        </main>
+        </div>
     </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const toggle = document.getElementById('darkToggle');
+    const body = document.body;
+    const sidebar = document.getElementById('sidebar');
+    const navbar = document.getElementById('navbar');
+
+    // LOAD MODE
+    if (localStorage.getItem("darkMode") === "enabled") {
+        enableDark();
+    }
+
+    toggle.addEventListener("click", () => {
+        if (body.classList.contains("dark-mode")) {
+            disableDark();
+        } else {
+            enableDark();
+        }
+    });
+
+    function enableDark() {
+        body.classList.add("dark-mode");
+        sidebar.classList.add("dark-mode");
+        navbar.classList.add("dark-mode");
+
+        document.querySelectorAll(".card").forEach(c => c.classList.add("dark-mode"));
+        document.querySelectorAll("table").forEach(t => t.classList.add("dark-mode"));
+
+        localStorage.setItem("darkMode", "enabled");
+        toggle.innerHTML = "☀️ Light Mode";
+    }
+
+    function disableDark() {
+        body.classList.remove("dark-mode");
+        sidebar.classList.remove("dark-mode");
+        navbar.classList.remove("dark-mode");
+
+        document.querySelectorAll(".card").forEach(c => c.classList.remove("dark-mode"));
+        document.querySelectorAll("table").forEach(t => t.classList.remove("dark-mode"));
+
+        localStorage.setItem("darkMode", "disabled");
+        toggle.innerHTML = "🌙 Dark Mode";
+    }
+</script>
+
 </body>
 </html>

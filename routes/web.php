@@ -3,16 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\AuthController;
+use App\Models\Siswa;
 
 // =========================
 //  ROUTE GUEST (BELUM LOGIN)
 // =========================
 Route::middleware('guest')->group(function () {
 
-    // Halaman login (GET)
+    // Halaman login
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 
-    // Proses login (POST)
+    // Proses login
     Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
 });
 
@@ -22,20 +23,42 @@ Route::middleware('guest')->group(function () {
 // =========================
 Route::middleware('auth')->group(function () {
 
-    // Halaman Dashboard (layout modern)
-    Route::get('/dashboard', function () {
-        return view('dashboard'); // opsional
-    })->name('dashboard');
+    // =========================
+    // DASHBOARD (STATISTIK BARU)
+// =========================
+Route::get('/dashboard', function () {
 
-    // Halaman Profil User
+    $totalSiswa = Siswa::count();
+
+    // Statistik gender
+    $laki = Siswa::where('gender', 'L')->count();
+    $perempuan = Siswa::where('gender', 'P')->count();
+
+    // Jumlah siswa per kelas
+    $kelas = Siswa::select('kelas', \DB::raw('COUNT(*) as total'))
+                ->groupBy('kelas')
+                ->orderBy('kelas')
+                ->get();
+
+    return view('dashboard', compact('totalSiswa', 'laki', 'perempuan', 'kelas'));
+
+})->name('dashboard');
+
+    // =========================
+    // PROFIL USER
+    // =========================
     Route::get('/profile', function () {
         return view('profile');
     })->name('profile');
 
-    // Logout
+    // =========================
+    // LOGOUT
+    // =========================
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Semua user login boleh melihat daftar siswa
+    // =========================
+    // DATA SISWA DAPAT DILIHAT SEMUA USER
+    // =========================
     Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
 
     // =========================
@@ -50,5 +73,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/siswa/{siswa}', [SiswaController::class, 'update'])->name('siswa.update');
 
         Route::delete('/siswa/{siswa}', [SiswaController::class, 'destroy'])->name('siswa.destroy');
+
     });
+
 });
