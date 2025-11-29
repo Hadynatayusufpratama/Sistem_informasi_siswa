@@ -101,5 +101,5 @@ Tambahkan screenshot sesuai kebutuhan.
 
 👨‍💻 Developer
 
-HADYNATA YUSUF PRATAMAi
+HADYNATA YUSUF PRATAMA
 
