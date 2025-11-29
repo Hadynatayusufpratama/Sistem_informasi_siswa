@@ -1,7 +1,6 @@
 Sistem Informasi Siswa 
 
 
-Developed by: HADYNATA YUSUF PRATAMA 🎓🔥
 Sistem Informasi Siswa adalah aplikasi berbasis web yang mempermudah pengelolaan data siswa, menampilkan statistik kelas & gender, serta menyediakan dashboard modern yang dapat digunakan oleh admin maupun user (guru/staff).
 
 Website ini dirancang agar sederhana, cepat, modern, dan mudah digunakan oleh siapa saja.
